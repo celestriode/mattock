@@ -55,7 +55,6 @@ class Name extends AbstractOption implements FlexibleOptionInterface
      */
     public static function handle(EntitySelectorParser $parser): AbstractOption
     {
-        return new self('grg', false);
         $n = $parser->getReader()->getCursor();
         $inverted = self::shouldInvertValue($parser->getReader());
         $name = $parser->getReader()->readString();
