@@ -1,0 +1,26 @@
+{
+    "name": "celestriode/mattock",
+    "description": "Various parsers specific to Minecraft.",
+    "authors": [
+        {
+            "name": "Celestriode",
+            "homepage": "https://github.com/celestriode"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Celestriode\\Mattock\\": "src/"
+        }
+    },
+    "require": {
+        "celestriode/captain": "v0.0.9-beta",
+        "ext-bcmath": "*",
+        "ext-mbstring": "*",
+        "ext-intl": "*",
+        "ramsey/uuid": "^4.1"
+    },
+    "license": "MIT",
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
