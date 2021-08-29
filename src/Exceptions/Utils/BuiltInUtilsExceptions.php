@@ -68,7 +68,7 @@ final class BuiltInUtilsExceptions
         return new DynamicCommandExceptionType(new class implements DynamicFunctionInterface {
             public function apply(...$data): MessageInterface
             {
-                return new LiteralMessage('Invalid resource location namespace: \'' . $data[0] . '\'');
+                return new LiteralMessage('Invalid character in resource location namespace: \'' . $data[0] . '\'');
             }
         });
     }
@@ -78,7 +78,7 @@ final class BuiltInUtilsExceptions
         return new DynamicCommandExceptionType(new class implements DynamicFunctionInterface {
             public function apply(...$data): MessageInterface
             {
-                return new LiteralMessage('Invalid resource location path: \'' . $data[0] . '\'');
+                return new LiteralMessage('Invalid character in resource location path: \'' . $data[0] . '\'');
             }
         });
     }

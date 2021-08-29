@@ -91,27 +91,7 @@ class ResourceLocation
      */
     public static function read(StringReader $reader): self
     {
-        $n = $reader->getCursor();
-
-        // Cycle through all characters until the end.
-
-        while ($reader->canRead() && static::isAllowedInResourceLocation($reader->peek())) {
-
-            $reader->skip();
-        }
-
-        $string = mb_substr($reader->getString(), $n, $reader->getCursor() - $n);
-
-        try {
-
-            return static::decompose($reader, $string);
-
-        } catch (CommandSyntaxException $e) {
-
-            $reader->setCursor($n);
-
-            throw $e;
-        }
+        return static::decompose($reader, $reader->getString());
     }
 
     /**
@@ -150,16 +130,20 @@ class ResourceLocation
 
         // Validate the namespace.
 
-        if (!static::isValidNamespace($parts[0])) {
+        $namespace = new StringReader($parts[0]);
 
-            throw UtilsException::getBuiltInExceptions()->invalidResourceNamespace()->createWithContext($reader, $parts[0]);
+        if (!static::isValidNamespace($namespace)) {
+
+            throw UtilsException::getBuiltInExceptions()->invalidResourceNamespace()->createWithContext($namespace, $parts[0]);
         }
 
         // Validate the path.
 
-        if (!static::isValidPath($parts[1])) {
+        $path = new StringReader($parts[1]);
 
-            throw UtilsException::getBuiltInExceptions()->invalidResourcePath()->createWithContext($reader, $parts[1]);
+        if (!static::isValidPath($path)) {
+
+            throw UtilsException::getBuiltInExceptions()->invalidResourcePath()->createWithContext($path, $parts[1]);
         }
 
         // All good, create and return a new resource location.
@@ -170,29 +154,23 @@ class ResourceLocation
     /**
      * Returns whether or not there are any invalid characters in a namespace.
      *
-     * @param string $namespace The namespace to validate.
+     * @param StringReader $namespace The namespace to validate.
      * @return bool
      */
-    public static function isValidNamespace(string $namespace): bool
+    public static function isValidNamespace(StringReader $namespace): bool
     {
         // If the namespace is the default, don't bother checking.
 
-        if ($namespace === self::NAMESPACE) {
+        if ($namespace->getString() === self::NAMESPACE) {
 
             return true;
         }
 
-        // Split by unicode characters.
-
-        $characters = preg_split('//u', $namespace, -1, PREG_SPLIT_NO_EMPTY);
-
-        // Cycle through each character.
-
-        for ($i = 0, $j = count($characters); $i < $j; $i++) {
+        while ($namespace->canRead()) {
 
             // If the character is not valid, return false.
 
-            if (!static::validNamespaceCharacter($characters[$i])) {
+            if (!static::validNamespaceCharacter($namespace->read())) {
 
                 return false;
             }
@@ -206,22 +184,16 @@ class ResourceLocation
     /**
      * Returns whether or not there are any invalid characters in a path.
      *
-     * @param string $path The path to validate.
+     * @param StringReader $path The path to validate.
      * @return bool
      */
-    public static function isValidPath(string $path): bool
+    public static function isValidPath(StringReader $path): bool
     {
-        // Split by unicode characters.
-
-        $characters = preg_split('//u', $path, -1, PREG_SPLIT_NO_EMPTY);
-
-        // Cycle through each character.
-
-        for ($i = 0, $j = count($characters); $i < $j; $i++) {
+        while ($path->canRead()) {
 
             // If the character is not valid, return false.
 
-            if (!static::validPathCharacter($characters[$i])) {
+            if (!static::validPathCharacter($path->read())) {
 
                 return false;
             }
