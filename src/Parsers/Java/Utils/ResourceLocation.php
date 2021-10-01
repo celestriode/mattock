@@ -95,6 +95,42 @@ class ResourceLocation
     }
 
     /**
+     * Reads a string until it hits a non-resource-location-compliant character and then attempts to parse what the
+     * characters prior as a resource location.
+     *
+     * @param StringReader $reader
+     * @return static
+     * @throws CommandSyntaxException
+     */
+    public static function readLenient(StringReader $reader): self
+    {
+        // Step through the string until it hits a character like , or ] that cannot be in a resource location.
+
+        $n = $reader->getCursor();
+
+        while ($reader->canRead() && ResourceLocation::isAllowedInResourceLocation($reader->peek())) {
+
+            $reader->skip();
+        }
+
+        // Get a substring based on where the cursor ended.
+
+        $string = mb_substr($reader->getString(), $n, $reader->getCursor() - $n);
+
+        // Now try to validate that resource location.
+
+        try {
+
+            return static::read(new StringReader($string));
+        } catch (CommandSyntaxException $e) {
+
+            $reader->setCursor($n);
+
+            throw $e;
+        }
+    }
+
+    /**
      * Takes in a raw resource string and a delimiter to locate, splits the string at the delimiter, and returns a new
      * resource location using those parts (when applicable). Fills in the namespace with a default if no delimiter
      * was present. e.g. "blah" turns into "minecraft:blah" while "test:blah" remains the same.

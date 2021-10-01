@@ -56,7 +56,7 @@ class Predicate extends AbstractOption implements FlexibleOptionInterface
     public static function handle(EntitySelectorParser $parser): AbstractOption
     {
         $inverted = self::shouldInvertValue($parser->getReader());
-        $predicate = ResourceLocation::read($parser->getReader());
+        $predicate = ResourceLocation::readLenient($parser->getReader());
 
         return new self($predicate, $inverted);
     }
