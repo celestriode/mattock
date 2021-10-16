@@ -111,7 +111,7 @@ class Type extends AbstractOption implements FlexibleOptionInterface
         /** @noinspection PhpIfWithCommonPartsInspection */
         if (self::isTag($parser->getReader())) {
 
-            $resourceLocation = ResourceLocation::read($parser->getReader());
+            $resourceLocation = ResourceLocation::readLenient($parser->getReader());
 
             // Validate the entity tag.
 
@@ -127,7 +127,7 @@ class Type extends AbstractOption implements FlexibleOptionInterface
             return new self($resourceLocation, $inverted, true);
         }
 
-        $resourceLocation = ResourceLocation::read($parser->getReader());
+        $resourceLocation = ResourceLocation::readLenient($parser->getReader());
 
         // Validate the entity type.
 

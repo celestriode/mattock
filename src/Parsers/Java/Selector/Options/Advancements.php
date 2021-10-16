@@ -49,7 +49,7 @@ class Advancements extends AbstractOption implements FlexibleOptionInterface
         while ($reader->canRead() && $reader->peek() != '}') {
 
             $reader->skipWhitespace();
-            $advancement = ResourceLocation::read($reader);
+            $advancement = ResourceLocation::readLenient($reader);
             $reader->skipWhitespace();
             $reader->expect('=');
             $reader->skipWhitespace();
