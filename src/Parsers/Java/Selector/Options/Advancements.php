@@ -8,6 +8,8 @@ use Celestriode\Mattock\Parsers\Java\Utils\ResourceLocation;
 /**
  * The "advancements" option for dynamic selectors.
  *
+ * TODO: validate advancements.
+ *
  * @package Celestriode\Mattock\Parsers\Java\Selector\Options
  */
 class Advancements extends AbstractOption implements FlexibleOptionInterface

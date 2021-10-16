@@ -4,6 +4,7 @@ use Celestriode\Mattock\Exceptions\Selector\SelectorException;
 use Celestriode\Mattock\Parsers\Java\EntitySelectorParser;
 use Celestriode\Mattock\Parsers\Java\Selector\DynamicSelector;
 use Celestriode\Mattock\Parsers\Java\Selector\DynamicSelectorBuilder;
+use Exception;
 
 /**
  * The "sort" option for dynamic selectors.
@@ -37,7 +38,7 @@ class Sort extends AbstractOption
      *
      * @param EntitySelectorParser $parser
      * @return AbstractOption
-     * @throws \Exception
+     * @throws Exception
      */
     public static function handle(EntitySelectorParser $parser): AbstractOption
     {

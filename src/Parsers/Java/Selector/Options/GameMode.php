@@ -1,6 +1,7 @@
 <?php namespace Celestriode\Mattock\Parsers\Java\Selector\Options;
 
 use Celestriode\Captain\Exceptions\CommandSyntaxException;
+use Celestriode\DynamicRegistry\AbstractRegistry;
 use Celestriode\Mattock\Exceptions\Selector\SelectorException;
 use Celestriode\Mattock\Parsers\Java\EntitySelectorParser;
 use Celestriode\Mattock\Parsers\Java\Selector\DynamicSelectorBuilder;
@@ -13,9 +14,9 @@ use Celestriode\Mattock\Parsers\Java\Selector\DynamicSelectorBuilder;
 class GameMode extends AbstractOption implements FlexibleOptionInterface
 {
     /**
-     * @var string[] Valid game mode names for use with this option.
+     * @var AbstractRegistry|null Valid game modes for use with this option.
      */
-    protected static $validGameModes = ['survival', 'creative', 'adventure', 'spectator'];
+    protected static $gamemodeRegistry;
 
     /**
      * @var string The value of the "gamemode" option.
@@ -76,11 +77,11 @@ class GameMode extends AbstractOption implements FlexibleOptionInterface
 
         // If the value is not a valid game mode, throw error.
 
-        if (!in_array($gameMode, self::$validGameModes)) {
+        if (self::$gamemodeRegistry !== null && !self::$gamemodeRegistry->has($gameMode)) {
 
             $parser->getReader()->setCursor($n);
 
-            throw SelectorException::getBuiltInExceptions()->unknownGameMode()->createWithContext($parser->getReader(), $gameMode);
+            throw SelectorException::getBuiltInExceptions()->unknownGameMode(self::$gamemodeRegistry)->createWithContext($parser->getReader(), $gameMode);
         }
 
         $parser->getBuilder()->getSelector()->setIncludesNonPlayerEntities(false);
@@ -105,16 +106,13 @@ class GameMode extends AbstractOption implements FlexibleOptionInterface
     }
 
     /**
-     * Adds valid game mode names for this option.
+     * Sets the game mode registry to the input registry. This is where a list of valid game modes would be supplied.
      *
-     * @param string ...$gameModes
+     * @param AbstractRegistry $registry
      */
-    public static function addValidGamemodes(string ...$gameModes): void
+    public static function setGamemodeRegistry(AbstractRegistry $registry): void
     {
-        foreach ($gameModes as $gameMode) {
-
-            self::$validGameModes[] = $gameMode;
-        }
+        self::$gamemodeRegistry = $registry;
     }
 
     /**

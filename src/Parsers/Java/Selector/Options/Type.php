@@ -1,16 +1,17 @@
 <?php namespace Celestriode\Mattock\Parsers\Java\Selector\Options;
 
 use Celestriode\Captain\Exceptions\CommandSyntaxException;
+use Celestriode\DynamicRegistry\AbstractRegistry;
 use Celestriode\Mattock\Exceptions\Selector\SelectorException;
 use Celestriode\Mattock\Parsers\Java\EntitySelectorParser;
 use Celestriode\Mattock\Parsers\Java\Selector\DynamicSelectorBuilder;
-use Celestriode\Mattock\Parsers\Java\Utils\PopulationValidatorInterface;
 use Celestriode\Mattock\Parsers\Java\Utils\ResourceLocation;
 
 /**
- * The "type" option. Valid entity types and tags are left blank, to be filled based on a validator function provided.
- * This allows the option's values to be dynamically loaded through some condition (such as the Minecraft version). Use
- * the setTypeValidator() or setEntityTagValidator() methods to supply a validation function.
+ * The "type" option. Valid entity types and tags are obtained from a registry provided, if desired. This allows the
+ * option's values to be dynamically loaded through some condition (such as the Minecraft version). Use the
+ * setTypeRegistry() or setEntityTagRegistry() methods to supply a validation registry. Leave them out to ignore values,
+ * thereby checking only syntax.
  *
  * TODO: don't use populators here. Basic structure is fine to verify, but not values. Save that for audits.
  *
@@ -19,14 +20,14 @@ use Celestriode\Mattock\Parsers\Java\Utils\ResourceLocation;
 class Type extends AbstractOption implements FlexibleOptionInterface
 {
     /**
-     * @var PopulationValidatorInterface|null Validator for types.
+     * @var AbstractRegistry|null Validator for types.
      */
-    protected static $typeValidator;
+    protected static $typeRegistry;
 
     /**
-     * @var PopulationValidatorInterface|null Validator for entity tags.
+     * @var AbstractRegistry|null Validator for entity tags.
      */
-    protected static $entityTagValidator;
+    protected static $entityTagRegistry;
 
     /**
      * @var ResourceLocation The resource location of the "type" option.
@@ -115,11 +116,11 @@ class Type extends AbstractOption implements FlexibleOptionInterface
 
             // Validate the entity tag.
 
-            if (self::$entityTagValidator === null || !self::$entityTagValidator->validateFromPopulation($resourceLocation->toString())) {
+            if (self::$entityTagRegistry !== null && !self::$entityTagRegistry->has($resourceLocation->toString())) {
 
                 $parser->getReader()->setCursor($n);
 
-                throw SelectorException::getBuiltInExceptions()->unknownEntityTag()->createWithContext($parser->getReader(), $resourceLocation->toString());
+                throw SelectorException::getBuiltInExceptions()->unknownEntityTag(self::$entityTagRegistry)->createWithContext($parser->getReader(), $resourceLocation->toString());
             }
 
             // Return the completed type.
@@ -131,11 +132,11 @@ class Type extends AbstractOption implements FlexibleOptionInterface
 
         // Validate the entity type.
 
-        if (self::$typeValidator === null || !self::$typeValidator->validateFromPopulation($resourceLocation->toString())) {
+        if (self::$typeRegistry !== null && !self::$typeRegistry->has($resourceLocation->toString())) {
 
             $parser->getReader()->setCursor($n);
 
-            throw SelectorException::getBuiltInExceptions()->unknownEntityType()->createWithContext($parser->getReader(), $resourceLocation->toString());
+            throw SelectorException::getBuiltInExceptions()->unknownEntityType(self::$typeRegistry)->createWithContext($parser->getReader(), $resourceLocation->toString());
         }
 
         // Restrict the selector to players only if specified.
@@ -164,21 +165,21 @@ class Type extends AbstractOption implements FlexibleOptionInterface
     /**
      * Sets the entity type validator for the "type" option.
      *
-     * @param PopulationValidatorInterface $validator
+     * @param AbstractRegistry $validator
      */
-    public static function setTypeValidator(PopulationValidatorInterface $validator): void
+    public static function setTypeRegistry(AbstractRegistry $validator): void
     {
-        self::$typeValidator = $validator;
+        self::$typeRegistry = $validator;
     }
 
     /**
      * Sets the entity tag validator for the "type" option.
      *
-     * @param PopulationValidatorInterface $validator
+     * @param AbstractRegistry $validator
      */
-    public static function setEntityTagValidator(PopulationValidatorInterface $validator): void
+    public static function setEntityTagRegistry(AbstractRegistry $validator): void
     {
-        self::$entityTagValidator = $validator;
+        self::$entityTagRegistry = $validator;
     }
 
     /**

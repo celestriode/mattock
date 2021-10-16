@@ -5,6 +5,8 @@ use Celestriode\Captain\Exceptions\DynamicFunctionInterface;
 use Celestriode\Captain\Exceptions\SimpleCommandExceptionType;
 use Celestriode\Captain\LiteralMessage;
 use Celestriode\Captain\MessageInterface;
+use Celestriode\DynamicRegistry\AbstractRegistry;
+use Celestriode\Mattock\Exceptions\NotInRegistryException;
 
 final class BuiltInSelectorExceptions
 {
@@ -113,9 +115,10 @@ final class BuiltInSelectorExceptions
         });
     }
 
-    public function unknownGameMode(): DynamicCommandExceptionType
+    public function unknownGameMode(AbstractRegistry $registry): DynamicCommandExceptionType
     {
-        return new DynamicCommandExceptionType(new class implements DynamicFunctionInterface {
+        return new NotInRegistryException($registry, new class implements DynamicFunctionInterface {
+
             public function apply(...$data): MessageInterface
             {
                 return new LiteralMessage('Unknown game mode \'' . $data[0] . '\'');
@@ -123,9 +126,9 @@ final class BuiltInSelectorExceptions
         });
     }
 
-    public function unknownEntityType(): DynamicCommandExceptionType
+    public function unknownEntityType(AbstractRegistry $registry): DynamicCommandExceptionType
     {
-        return new DynamicCommandExceptionType(new class implements DynamicFunctionInterface {
+        return new NotInRegistryException($registry, new class implements DynamicFunctionInterface {
             public function apply(...$data): MessageInterface
             {
                 return new LiteralMessage('Unknown entity type \'' . $data[0] . '\'');
@@ -133,9 +136,9 @@ final class BuiltInSelectorExceptions
         });
     }
 
-    public function unknownEntityTag(): DynamicCommandExceptionType
+    public function unknownEntityTag(AbstractRegistry $registry): DynamicCommandExceptionType
     {
-        return new DynamicCommandExceptionType(new class implements DynamicFunctionInterface {
+        return new NotInRegistryException($registry, new class implements DynamicFunctionInterface {
             public function apply(...$data): MessageInterface
             {
                 return new LiteralMessage('Unknown entity tag \'' . $data[0] . '\'');

@@ -17,7 +17,8 @@
         "ext-bcmath": "*",
         "ext-mbstring": "*",
         "ext-intl": "*",
-        "ramsey/uuid": "^4.1"
+        "ramsey/uuid": "^4.1",
+        "celestriode/dynamic-registry": "^1.0"
     },
     "license": "MIT",
     "require-dev": {
