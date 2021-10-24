@@ -1,6 +1,19 @@
 <?php namespace Celestriode\Mattock\Parsers\Java\Nbt;
 
 use Celestriode\Mattock\Exceptions\MattockException;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\ByteTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\ShortTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\IntTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\LongTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\FloatTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\DoubleTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\ByteArrayTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\StringTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\ListTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\CompoundTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\IntArrayTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\LongArrayTag;
+use Celestriode\Mattock\Parsers\Java\Nbt\Tags\TagInterface;
 
 final class TagUtils
 {
@@ -8,7 +21,7 @@ final class TagUtils
     {
         switch($type) {
             case TagInterface::TAG_END:
-                return new EndTag();
+                throw new MattockException('Unhandled TAG_END');
             case TagInterface::TAG_BYTE:
                 return new ByteTag();
             case TagInterface::TAG_SHORT:

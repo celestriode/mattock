@@ -169,6 +169,15 @@ class MinMaxBounds
                 throw UtilsException::getBuiltInExceptions()->minMaxSwapped()->createWithContext($reader, $min . '..' . $max);
             }
 
+            // Throw if the reader didn't use the entire string.
+
+            if ($reader->canRead()) {
+
+                $reader->skip();
+
+                throw UtilsException::getBuiltInExceptions()->invalidRange()->createWithContext($reader, $reader->getString());
+            }
+
             // All good, return a new bound.
 
             return new static($min, $max);
@@ -243,18 +252,12 @@ class MinMaxBounds
     protected static function isAllowedInputChat(StringReader $reader): bool
     {
         $char = $reader->peek();
-        $ord = IntlChar::ord($char);
 
-        if ($ord >= 48 && $ord <= 57 || $char == '-') {
+        if ($char != '.') {
 
             return true;
         }
 
-        if ($char == '.') {
-
-            return !$reader->canRead(2) || $reader->peek(1) != '.';
-        }
-
-        return false;
+        return !$reader->canRead(2) || $reader->peek(1) != '.';
     }
 }
