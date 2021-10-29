@@ -44,6 +44,23 @@ class MinMaxBounds
     }
 
     /**
+     * Returns whether or not the input value is within the range (with supplied inclusiveness).
+     *
+     * @param float $input The input to compare to.
+     * @param bool $inclusive Whether or not the comparison with the range is inclusive.
+     * @return bool
+     */
+    public function within(float $input, bool $inclusive = true): bool
+    {
+        if ($inclusive) {
+
+            return ($this->getMin() === null || $input >= $this->getMin()) && ($this->getMax() === null || $input <= $this->getMax());
+        }
+
+        return ($this->getMin() === null || $input > $this->getMin()) && ($this->getMax() === null || $input < $this->getMax());
+    }
+
+    /**
      * Sets this boundary's min and max based on another boundary.
      *
      * @param MinMaxBounds $bounds
