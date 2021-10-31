@@ -12,6 +12,7 @@ use IntlChar;
  */
 class ResourceLocation
 {
+    public const TAG_TOKEN = '#';
     public const NAMESPACE = 'minecraft';
     public const DELIMITER = ':';
 
@@ -26,13 +27,19 @@ class ResourceLocation
     private $path;
 
     /**
+     * @var bool Whether or not this resource location derived from a tagged resource location (e.g., #minecraft:test).
+     */
+    private $tag;
+
+    /**
      * @param string $namespace The namespace within the resource location.
      * @param string $path The path within the resource location.
      */
-    protected function __construct(string $namespace, string $path)
+    public function __construct(string $namespace, string $path, bool $tag = false)
     {
         $this->namespace = $namespace;
         $this->path = $path;
+        $this->tag = $tag;
     }
 
     /**
@@ -56,13 +63,23 @@ class ResourceLocation
     }
 
     /**
+     * Returns whether or not this resource location derived from a tagged resource location (e.g., #minecraft:test).
+     *
+     * @return bool
+     */
+    public function isTag(): bool
+    {
+        return $this->tag;
+    }
+
+    /**
      * Returns the resource location in its flattened form ("namespace:path").
      *
      * @return string
      */
-    public function toString(): string
+    public function toString(bool $includeTag = false): string
     {
-        return ($this->getNamespace() . self::DELIMITER . $this->getPath());
+        return (($includeTag && $this->isTag()) ? '#' : '') . ($this->getNamespace() . self::DELIMITER . $this->getPath());
     }
 
     /**
@@ -71,9 +88,9 @@ class ResourceLocation
      * @param string $input The raw string to compare to.
      * @return bool
      */
-    public function matches(string $input): bool
+    public function matches(string $input, bool $checkForTag = false): bool
     {
-        return $this->toString() == $input;
+        return $this->toString($checkForTag) == $input;
     }
 
     /**
@@ -86,12 +103,13 @@ class ResourceLocation
      * "path/to/resource"
      *
      * @param StringReader $reader The reader that would contain a resource location.
+     * @param bool $checkForTag
      * @return static
      * @throws CommandSyntaxException
      */
-    public static function read(StringReader $reader): self
+    public static function read(StringReader $reader, bool $checkForTag = false): self
     {
-        return static::decompose($reader, $reader->getString());
+        return static::decompose($reader,self::DELIMITER, $checkForTag);
     }
 
     /**
@@ -99,14 +117,22 @@ class ResourceLocation
      * characters prior as a resource location.
      *
      * @param StringReader $reader
+     * @param bool $checkForTag
      * @return static
      * @throws CommandSyntaxException
      */
-    public static function readLenient(StringReader $reader): self
+    public static function readLenient(StringReader $reader, bool $checkForTag = false): self
     {
-        // Step through the string until it hits a character like , or ] that cannot be in a resource location.
-
         $n = $reader->getCursor();
+
+        // If tagged resource locations (e.g., #minecraft:test) should be checked, skip the tag token if it is present.
+
+        if ($checkForTag && $reader->peek() == self::TAG_TOKEN) {
+
+            $reader->skip();
+        }
+
+        // Step through the string until it hits a character like , or ] that cannot be in a resource location.
 
         while ($reader->canRead() && ResourceLocation::isAllowedInResourceLocation($reader->peek())) {
 
@@ -121,7 +147,7 @@ class ResourceLocation
 
         try {
 
-            return static::read(new StringReader($string));
+            return static::read(new StringReader($string), $checkForTag);
         } catch (CommandSyntaxException $e) {
 
             $reader->setCursor($n);
@@ -136,13 +162,25 @@ class ResourceLocation
      * was present. e.g. "blah" turns into "minecraft:blah" while "test:blah" remains the same.
      *
      * @param StringReader $reader The reader being used for parsing.
-     * @param string $string The raw resource string to be transformed into a ResourceLocation object.
      * @param string $delimiter The delimiter separating the namespace from the path.
+     * @param bool $checkForTag
      * @return static
      * @throws CommandSyntaxException
      */
-    public static function decompose(StringReader $reader, string $string, string $delimiter = self::DELIMITER): self
+    public static function decompose(StringReader $reader, string $delimiter = self::DELIMITER, bool $checkForTag = false): self
     {
+        // If the input is a tag, label it as such.
+
+        $tag = false;
+
+        if ($checkForTag && $reader->peek() == self::TAG_TOKEN) {
+
+            $tag = true;
+            $reader->skip();
+        }
+
+        $string = $reader->getRemaining();
+
         $parts = [self::NAMESPACE, $string];
         $index = mb_strpos($string, $delimiter);
 
@@ -158,7 +196,7 @@ class ResourceLocation
 
             if ($index >= 1) {
 
-                // Set the namespace to what was before the index.
+                // Set the namespace to what was before the index. If index was 0, then no namespace was supplied.
 
                 $parts[0] = mb_substr($string, 0, $index);
             }
@@ -184,7 +222,7 @@ class ResourceLocation
 
         // All good, create and return a new resource location.
 
-        return new static($parts[0], $parts[1]);
+        return new static($parts[0], $parts[1], $tag);
     }
 
     /**
