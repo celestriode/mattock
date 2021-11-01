@@ -17,4 +17,9 @@ class EndTag implements TagInterface
     {
         return self::TAG_END;
     }
+
+    public function toString(): string
+    {
+        return '';
+    }
 }

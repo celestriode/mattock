@@ -13,4 +13,29 @@ class CompoundTag implements TagInterface
     {
         return self::TAG_COMPOUND;
     }
+
+    public function toString(): string
+    {
+        $buffer = '{';
+        $num = count($this->tags);
+        $i = 0;
+
+        /**
+         * @var TagInterface $value
+         */
+        foreach ($this->tags as $key => $value) {
+
+            $buffer = $buffer . '"' . addslashes($key) . '": ';
+            $buffer = $buffer . $value->toString();
+
+            if ($i + 1 != $num) {
+
+                $buffer = $buffer . ',';
+            }
+
+            $i++;
+        }
+
+        return $buffer . '}';
+    }
 }

@@ -39,4 +39,26 @@ abstract class AbstractListTag implements TagInterface
     {
         return $this->getListType() === $tag->getType();
     }
+
+    protected function packListToString(): string
+    {
+        $buffer = '';
+
+        for ($i = 0, $j = count($this->values); $i < $j; $i++) {
+
+            $buffer = $buffer . $this->values[$i]->toString();
+
+            if ($i + 1 != $j) {
+
+                $buffer = $buffer . ',';
+            }
+        }
+
+        return $buffer;
+    }
+
+    public function toString(): string
+    {
+        return '[' . $this->packListToString() . ']';
+    }
 }

@@ -32,4 +32,9 @@ class ByteTag extends AbstractNumberTag
     {
         return self::TAG_BYTE;
     }
+
+    public function toString(): string
+    {
+        return parent::toString() . 'b';
+    }
 }

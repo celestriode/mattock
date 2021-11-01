@@ -11,4 +11,9 @@ class ByteArrayTag extends AbstractArrayTag
     {
         return self::TAG_BYTE;
     }
+
+    public function toString(): string
+    {
+        return '[B;' . $this->packListToString() . ']';
+    }
 }

@@ -18,4 +18,6 @@ interface TagInterface
     const TAG_NUMERIC = 99;
 
     public function getType(): int;
+
+    public function toString(): string;
 }

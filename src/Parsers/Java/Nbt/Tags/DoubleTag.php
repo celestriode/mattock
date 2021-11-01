@@ -25,4 +25,9 @@ class DoubleTag extends AbstractNumberTag
     {
         return self::TAG_DOUBLE;
     }
+
+    public function toString(): string
+    {
+        return parent::toString() . 'd';
+    }
 }

@@ -30,4 +30,9 @@ class LongTag extends AbstractNumberTag
     {
         return self::TAG_LONG;
     }
+
+    public function toString(): string
+    {
+        return parent::toString() . 'l';
+    }
 }

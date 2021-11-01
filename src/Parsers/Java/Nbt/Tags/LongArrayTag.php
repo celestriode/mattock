@@ -11,4 +11,9 @@ class LongArrayTag extends AbstractArrayTag
     {
         return self::TAG_LONG;
     }
+
+    public function toString(): string
+    {
+        return '[L;' . $this->packListToString() . ']';
+    }
 }

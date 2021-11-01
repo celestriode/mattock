@@ -32,4 +32,9 @@ class ShortTag extends AbstractNumberTag
     {
         return self::TAG_SHORT;
     }
+
+    public function toString(): string
+    {
+        return parent::toString() . 's';
+    }
 }

@@ -11,4 +11,9 @@ class IntArrayTag extends AbstractArrayTag
     {
         return self::TAG_INT;
     }
+
+    public function toString(): string
+    {
+        return '[I;' . $this->packListToString() . ']';
+    }
 }

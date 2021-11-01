@@ -39,4 +39,9 @@ abstract class AbstractNumberTag implements TagInterface
     {
         return self::TAG_NUMERIC;
     }
+
+    public function toString(): string
+    {
+        return (string)$this->value;
+    }
 }

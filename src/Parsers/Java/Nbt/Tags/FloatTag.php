@@ -25,4 +25,9 @@ class FloatTag extends AbstractNumberTag
     {
         return self::TAG_FLOAT;
     }
+
+    public function toString(): string
+    {
+        return parent::toString() . 'f';
+    }
 }

@@ -23,4 +23,9 @@ class StringTag implements TagInterface
     {
         return self::TAG_STRING;
     }
+
+    public function toString(): string
+    {
+        return '"' . addslashes($this->getValue()) . '"'; // TODO: single quotes.
+    }
 }
