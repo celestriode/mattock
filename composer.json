@@ -13,12 +13,13 @@
         }
     },
     "require": {
+        "php": "^8.0",
         "celestriode/captain": "v0.0.10-beta",
         "ext-bcmath": "*",
         "ext-mbstring": "*",
         "ext-intl": "*",
-        "ramsey/uuid": "^4.1",
-        "celestriode/dynamic-registry": "^1.0"
+        "ramsey/uuid": "^4.2",
+        "celestriode/dynamic-registry": "^3.0"
     },
     "license": "MIT",
     "require-dev": {
